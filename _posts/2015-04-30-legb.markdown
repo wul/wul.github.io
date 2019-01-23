@@ -1,0 +1,98 @@
+---
+layout: post
+title: "LEGB规则与 Python 变量的存取"
+date: 2015-04-30 16:38:35 +0800
+comments: true
+categories: [python] 
+---
+
+每种语言都有检索变量的规则，决定了当程序查找一个变量的时候，会去哪里找，遵循什么样的搜索顺序。Python 亦然，Python 内部的查询变量的规则简称 LEGB。它是 Local，Environment，Global，Builtin 首字母的缩写。
+
+具体说来，加入一个函数要操作一个叫做 x 的变量，那么 Python 首先在函数内部，局部（Local）范围来查找这个变量；如果没有找到，则到包含这个函数定义的外围去查找（称作 Enclosing)，这个外围或许是另外一个函数（包括匿名函数），如果还是没有，继续朝外查找，一直到模块级别，从这里定义了全局（Global）变量中寻找；如果仍然没有找到，则查找 Python 内置变量(Built-in)，看是否有相同名字的。
+
+在上述查找过程中，一旦变量找到，就不再继续朝外围查找。也就是说 LEGB 同时也定义了从 L 到 B 得优先级。根据这个规则，读 Python 程序的时候，就非常容易判断程序到底操作的是哪个变量。比如一个文件 spam.py：
+
+    eggs = 5
+    def func():
+        eggs = 4
+        def set():
+           eggs = 3
+           print(eggs)
+      
+        set()               #1  print 3
+        print(eggs)         #2  print 4
+
+    func()
+    print(eggs)             #3  print 5
+
+
+
+屏幕依次会输出3，4，5.  道理遵循 LEGB 规则，  #1 set()函数里对 eggs 进行赋值操作会产生一个 set 函数的局部变量；#2 因为之前的 set() 操作处理的时 set 函数内部的变量，并不影响 func 定义的变量 eggs，所以这个变量内容不变；#3 同理 func() 函数调用并不影响全局定义的 eggs 变量，所以打印的全局变量值仍然是5.
+
+从上面的操作及对变量的影响来看，LEGB 规则确实起到作用，变量的查找遵循由内而外的原则。由内到外的指的是 Local->Enclosing->Global->Built-in
+
+    --------------------------------------------------------------
+    |Built-in(Python):                                           |
+    |    Python 内置的一些预先定义的名字：包括 open ，Exception 等。   |
+    |    --------------------------------------------------------|
+    |    |Global(Module):                                        |
+    |    |    模块文件最外面定义的变量名，属于模块的变量                | 
+    |    |    ---------------------------------------------------|
+    |    |    |Enclosing                                         |
+    |    |    |    定义在外层包含函数里的名字                        |
+    |    |    |    ----------------------------------------------|
+    |    |    |    |Local                                        |
+    |    |    |    |    函数内部所定义的变量                        |
+    --------------------------------------------------------------
+ 
+那么，如果在函数内部想特意使用外面的变量，而不是产生一个新变量，又如何做呢？ Python 提供两个语句，global 和 nonlocal 来声明外围的变量，而不是在函数内部产生一个同名的局部变量。举例如下：
+
+    eggs = 5
+    def func():
+    	global eggs
+        eggs = 4
+
+	hams = 10
+        def set():
+	    nonlocal hams
+            hams = 99
+      
+        set()               
+        print(eggs)         #1  print 4
+        print(hams)         #2  print 99
+
+
+    func()
+    print(eggs)             #3  print 4
+
+
+此时屏幕输出4,99,4。 #1输出为4原因显而易见；#2输出99是因为 set()函数调用使用 nonlocal 声明，表示改变的 hams 变量是外围 func()函数内部所定义的变量；#3则是因为 func()调用声明 eggs 是全局变量，进而修改了这个变量的值。
+
+需要注意的是global 与 nonlocal 声明的用法。一个声明了变量属于 module（全局的），一个声明了变量属于外围的（上级函数）。如果在 func（）内部的语句“global eggs”变成“nonlocal eggs”则会引起语法错误，因为 eggs 是个全局变量，使用前需要 global 来声明。
+
+到了这里，我们可以自认为了解了Python如何查询，修改变量。基本上如此，对于一般声明的变量是这个规则。但是对于有些变量，他们的声明作用域比较特殊，需要区别对待，依旧举例说明：
+
+
+    x = 100
+    lst = [1,2,3]
+    lst2 = [x for x in lst]
+    print(x)                   #1 still 100
+
+    try:
+        1/0
+    except Exception as x:
+        pass
+
+    print(x)                   #2 UnboundLocalError: local variable 'x' referenced before assignment
+
+
+上面的例子中，注意变量 x，除过普通用法，它还用作在另外两个地方
+
+* Comprehansion 变量:
+  
+  诸如[x for x in lst]里的x，这里定义的这种变量，它的作用域只是这个表达式，Python 3.x之后放置这些变量与其他变量的冲突，修改其作用域到表达式内部。
+
+* Exception 变量： 诸如 "Exception as x", 一旦异常被捕获，x 就用来被存放异常对象，**并且在异常处理 excpt 语句结束后被删除！**, 因此之后的 print(x)会报错！
+
+
+当然了，如果你仔细维护你的代码，并且遵循 LEGB 规则，你就不会起名同名变量来做类似操作，因此即使你不知道这两种特殊作用域的变量也没有关系。

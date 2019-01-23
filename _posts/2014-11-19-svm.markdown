@@ -1,0 +1,112 @@
+---
+layout: post
+title: "支持向量机 (SVM)"
+date: 2014-11-19 08:42:38 +0800
+comments: true
+categories: [Machine Learning]
+---
+
+
+支持向量机 (Support Vector Machine)
+======
+支持向量机从字面意思上完全得不到要领。支持...向量机...？干嘛要支持机器？了解到底这是一个什么东西之前，我们先看看它另外一个别名，“最大边界分类器”（Maximum Margin Classifier）。这个就有点意思了，首先是个分类器，再者是基于边界进行分类，再加上个限定词“最大”。这是一个基于直觉上的形象说法，在探讨算法本身之前，我们先看看，在一个二维空间内，对于线性可以区分的两类数据如何划分它们的边界，以此来获得关于所谓的最大边界分类的一个初步认识。
+
+以下图来自Wikipedia
+![SVM](http://upload.wikimedia.org/wikipedia/commons/2/20/Svm_separating_hyperplanes.png)
+
+这里明显有两组不同样本，在机器学习中我们可以通过神经网络或者逻辑回归或者其他算法来做分类处理，但是从直觉上，我们可以看到，实际上可以在它们中间划分一条线来进行分割。这是一个很自然地想法，问题是，如何来划这个分割线。不同的人有不同的画法，在这里总共有3条直线来划分，H1，H2 和 H3。其中 H3 这个划分是错误的，它没有将多数样本正确区分。H1这条线可以说区分了样本，但是没有 H2 这条线的划分好。这是因为，H1的划分并不在两个样本集合边缘的正中间，如果新来一个样本来计算分类的话，很容易错误分类。而 H2 这条线则使得两组样本的边缘最大化，是一个优选的答案。
+
+现在对于分类器而言，我们的问题就是根据这个想法，如何找到这个最优的分割线。这个例子本身是用得二维空间，通过线段来分割两组样本。对于多维空间，我们是要寻找一个超平面（Hyperplane），来分割样本。
+
+首先我们定义包含 m 个样本，n 个 features的集合为：
+
+$$\mathcal{D}=\\{(x\_i,y\_i)|x\_{i}\in{R^{n}},y\_i\in\\{\-1,1\\} \\}\_{i=1}^{m}$$
+
+
+
+拉格朗日对偶（Lagrange duality）- 数学理论基础
+------
+我们之前已经知道我们所要找寻的目标是最大化2/w，这个问题可以换种表述方式而不影响结果。那就是，我们找寻的目标是最小化 $w^2/2 $。
+
+在目前的情况下，似乎很难找到这样的 w，但是这里有一些约束，可以帮助我们进行寻找。这些约束显而易见，对于我们所有的样本，它们对应的值不是>=1，就是<=-1。
+
+在继续推导之前，先介绍一下拉格朗日对偶。说要寻找一个函数 f(x) 的最小值，这个函数符合一些约束。
+
+$$ \underset{w}{min}\quad f(w) $$
+$$  s.t. \quad h\_i(w)=0, \quad i=1,2,...,l.$$
+
+对此，我们定义拉格朗日方程
+
+$$\mathcal{L}(\mathcal{w},\beta)=f(w)+\sum\_{i=1}^{l}\beta\_ih\_i(w)$$
+
+$\beta\_i$被称作拉格朗日乘子(Lagrange multipliers)，对于这个方程，求偏导数可得$\mathcal{w}和\beta$.
+
+$$\frac{\partial{\mathcal{L}}}{\partial{w\_i}}=0 ;\quad \frac{\partial{\mathcal{L}}}{\partial \beta\_i} = 0 $$
+
+这里，我们谈论的这个约束条件是一个等式。对于更一般的拉格朗日方程，它不但包含等式约束，也有可能报刊不等式约束，也就是**primal** 优化问题。
+
+$$\underset{w}{min}\quad f(w) $$
+$$ s.t. \quad g\_i(w)\leq 0, \quad i=1,...,k $$
+$$\qquad   h\_i(w)=0,\quad i=1,...l$$
+
+对于更改后的约束，更一般的拉格朗日方程为:
+
+$$\mathcal{L}(\mathcal{w},\alpha,\beta)=f(w)+\sum\_{i=l}^{k}\alpha\_ig\_i(w)+\sum\_{i=l}^{l}\beta\_ih\_i(w)$$
+
+
+$\alpha与\beta$仍然是拉格朗日乘子。现在考虑拉格朗日方程的最大值，定义其为
+
+$$\theta\_\mathcal{P}(w)=\underset{\alpha,\beta:\alpha\_{i}\geq 0}{max}\mathcal{L}(w,\alpha,\beta) $$
+
+$\mathcal{P}$代表"primal"。拉格朗日方程中，如果选取的 w 出现 $g\_i(w)或者h\_i(w)$不符合约束条件的话，我们总能够选取足够大的$\alpha和\beta$，使得$\theta\_\mathcal{P}(w)$的最大值区域无穷；反之，如果对于任意 w，这些约束条件都满足，则最大值就是f(w),表示如下:
+
+
+$$
+\theta\_\mathcal{p}(w) = \left \\{ 
+  \begin{array}{l l}
+    \infty & \quad \text{如果 w 不满足约束}\\\\
+    f(w) & \quad \text{如果 w 满足约束}
+  \end{array} 
+\right.
+$$
+
+
+因此，假设在 w 取值满足约束的时候，如果我们寻找$\underset{w}{min}\theta\_\mathcal{P}(w)$，实际上就是寻找$\underset{w}{min} f(w)$。 为什么要绕这个弯子？ 为什么不直接找 f(w)最小值呢？ 那是因为做不到啊，很难用替代法之类的找到这个答案。那么用间接方式又如何做到呢？ 根据上面的推导，我们首先定义
+
+$$\underset{w}{min} \theta\_\mathcal{P}(w)=\underset{w}{min} \underset{\alpha,\beta:\alpha\_i \geq 0}{max} \mathcal{L}(w,\alpha,\beta) \quad \text {(1)}$$
+
+我们定义这个值为$p^*$。
+
+然后换个角度看待问题，定义新的方程
+
+$$\theta\_\mathcal{D}(\alpha,\beta)=\underset{w}{min}\mathcal{L}(w,\alpha,\beta)$$
+
+$\mathcal{D}$代表对偶(dual),这个方程寻找拉格朗日方程的最小值，不过不同于公式(1)中的相对于的变量$\alpha和\beta$，这里我们相对于变量w。继续推导，可得对偶优化问题
+
+$$\underset{\alpha,\beta:\alpha\_i \geq 0}{max} \theta\_\mathcal{D}(\alpha,\beta)=\underset{\alpha,\beta:\alpha\_i \geq 0}{max} \\underset{w}{min}\mathcal{L}(w,\alpha,\beta) \quad \text {(2)}$$
+
+这个公式和公式（1）很相似，不同的是把 max 和 min 的顺序反了。定义这个值为$d^\*$
+
+不过似乎还是没有头绪，现在不过就是定义了2个公式，对应了两个极值$d^\*和p^\*$，可这对于解决f(w)有什么帮助呢？答案是这两个值的关系可以帮助我们寻找答案。 那么这两个值什么关系？ 先看一个不等式
+
+$$\underset{x}{max}\underset{y}{min}f\_(x,y) <= \underset{y}{min}\underset{x}{max}f(x,y)$$
+
+这个公式这里不证明了，如果想不通可以看一个例子：定义f(x,y)=sin(x+y)，这样可得：
+
+$$\underset{x}{max}\underset{y}{min}f\_(x,y) = -1 <= \underset{y}{min}\underset{x}{max}f(x,y) = 1$$
+
+这个公式告诉我们$d^\*\leq p^\*$。 假设$f,g\_i$是凸函数，$h\_i(w)=a\_i^{T}w+b\_i$,同时对于任意w,$g\_i(w) \leq 0$，那么必存在$w^\*,\alpha^\*,\beta^\*$，使得$p^\*=d^\*=\mathcal{L}(w^\*,\alpha^\*,\beta^\*)$ (还不是很明白这一段)，同时$w^\*,\alpha^\*,\beta^\*$符合 KKT 条件（Karush-Kuhn-Tucker)：
+
+$$
+\begin{align\*} 
+\frac{\partial{}}{\partial{w\_i}}\mathcal{L}(w^\*,\alpha^\*,\beta^\*) &= 0,\quad \text {i=1,..,n} \\\\
+\frac{\partial{}}{\partial{\beta\_i}}\mathcal{L}(w^\*,\alpha^\*,\beta^\*) &= 0,\quad \text {i=1,..,l} \\\\
+\alpha\_i^\*g\_i(w^\*)&=0,\quad \text {i=1,..,k} \\\\
+g\_i(w^\*)&\leq 0,\quad \text {i=1,..,k} \\\\
+\alpha^\*&\geq 0,\quad \text {i=1,..,k}
+\end{align*}
+$$
+
+
+
+未完，待修改...

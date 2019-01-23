@@ -1,0 +1,54 @@
+---
+layout: post
+title: Use ASDF to Manage Lisp Packages
+description:
+categories: lisp
+tags: lisp
+author: Wu Li
+---
+
+It seems that Lisp built-in lacking a mechanism to allow user to manager their own programming library just like C/Python/Java . The built-in functions/macros such as "defpackage", "in-package", "load", "require" is merely for simple organisation of python files. But for a large library that has nested directories and different sub-package. It will soon become complicated to load them and to resolve the dependencies.
+
+So, we have ASDF. ASDF is "A system definition facility". Just like autotool in C, it can manage the correlations between files in your library, compiling them, loading them for your use.
+
+I am using SBCL, it has ASDF library included by default. And, currently ASDF 3 is published. As i am a new comer, following the official instruction of ASDF website. Just familiar with ASDF 3 is enough, no burden of legacy interfaces.  Here is some essentials to ASDF and i will illustrate how to use ASDF to build my hello world library.
+First, define a hello.asd (always use the .asd suffix, just like suffix ".in" for autoconf). This file describes your system. Find more details about usage in ASDF manual. In this example, we just define 3 additional files: packages.lisp, macros.lisp, and hello.lisp and set their dependencies.
+
+    (asdf:defsystem :hello
+      :name "Hello System"
+      :description "hello: a sample file system."
+      :version "0.2.1"
+      :author "Wu Li <who@unknown.com>"
+      :licence "Public Domain"
+      :components ((:file "packages")
+                   (:file "macros" :depends-on ("packages"))
+                   (:file "hello"  :depends-on ("macros"))))
+				   
+Define your package in package.lisp. Here we define a new package :hello and set a nick name HI.
+
+    (defpackage :hello
+      (:nicknames hi)
+      (:use :common-lisp)
+      (:export main))
+
+Leave macros.lisp empty for simplicity.
+Define hello.lisp. We just define one function here.
+
+    (in-package :hello)
+    (defun main () (format t "Hello world~%"))
+
+
+So far, we have programs and we defined the package by using ASDF, then we can use ASDF to load this package for use.
+
+Load package. 
+
+    (require :ASDF)                     ;load ASDF package if necessary
+    (push #P"/path/to/the/package/" asdf:*central-registry*) ;tell ASDF where the lib can be found
+    (asdf:load-system :hello)   ;the symbol should be identical with the one defined in hello.asd
+
+
+Run function owned by hello package
+
+    (hi:main) -> Hello world            ;hi is a nickname to hello package
+	
+This is a standard use of ASDF to build package.

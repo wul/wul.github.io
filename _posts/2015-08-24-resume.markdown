@@ -1,0 +1,76 @@
+#Resume
+
+I have 17 years' software engineering experience working for networking industry. I am seeking a long-term position as a software engineer / QA / lead / manager position where I can fully utilize my training, skills and make significant to the success of cooperation.
+
+My personal web site is [here](http://www.wuli.mobi).
+		
+## Experience
+   
+####Software Engineer at Cisco Systems	July 2010 – Present
+    
+Focus on automation testing, the framework, tools, etc.
+
+* Design and develop automatic testing platform which is used for Cisco Video Infrastructure testing
+* Design and develop automatic testing platform – Achievements including “Cisco Collaboration Awards” and “CTEN (Cisco Test Conference Network) Golden Prize”
+* Plan and coordinate automation development, define automation development target for each product release, draft execution plan and keep tracking; define strategies for automation development, execution and tracking
+* As a Scrum master, i coordinate the team in each Sprint and deliver defined user stories
+* Tool development: Designed and developed automatic deployment tool for end-to-end deployment of Video Infrastructure that is VMware Cloud based. This tool is widely used by internal/external teams.
+* Cisco internal coacher for Python language.
+
+####Software Engineer at Cisco Systems 	April 2008 – June 2010
+
+Tools development and hardware diagnosing.  Various tools including:   
+
+* DRP: Developed Diagnostic Release Portal (DRP), a PHP Zend-framework backend engine based web portal.
+* OWT project: A online Web Tool for online document editing, auto-versioning system.  PHP Zend plus extjs.
+* TAKO: A case management system for various business units. The case can be used for board issue tracking. PHP Zend plus extjs.
+
+I also took the duty of diagnosing hardware chips and bus that includes:
+
+* Wrote drivers for chips to verify the functions of SMB and I2C Bus
+* Wrote C test cases to verity reigisters and ports  
+
+####Software Engineer at Lucent	July 2003 – April 2008
+Responsible for developing automatic testing platform and testing of network products
+
+* Being a test automation platform (NEAT - Nuremberg Environment Automatic Testing) member for developing framework and process for automatic testing. 
+* Manual testing of various Lucent optical network products.
+* Wrote tools to manipulate test generators and analyzers such as IXIA, HP37718, etc.
+* Coached and supported test engineers for script development
+
+####Software Engineer at Teraspawn Co, Ltd	November 2003 – May 2008
+Worked on embedded firewall products. These products based on X86 platform with 4 MB FLASH ROM, they also support with manageable web interface and other network tools such as dail-out, dhcp, dns-relay, etc. 
+
+* Developed a simple, robust file system to ensure the I/O security for all configuration data in case of emergency.
+* Developed a small web server to match the management needs. It supports HTTP1.0.
+* Migration of other open source software, such as DNS SERVER, DHCP SERVER, etc. into embedded box.
+
+####Software Engineer at Netfront information Security Co, Ltd	October 1999 – October 2003
+* As a software engineer to develop PKI related software development
+Supported our customer with all kinds of PKI related APIs. 
+* Enable customer to build their security service based on these encipher/decipher APIs.
+* Developed functions to manipulating digital certification for B2B, B2C.
+
+##Education
+
+    Dalian University of Technology	1994-1998  Bachelor, Physics
+ 			
+##Skills
+- [x]Python   / C / LISP / PHP / Tcl/Tk / Shell / JavaScript / Java / Octave 
+- [x]Machine Learning / Data Processing
+- [x]Network Security / PKI / VMware / OOP 
+- [x]Unix Programming / Kernel Programming 
+- [x]Test Automation / Selenium / Jenkins
+- [x]TCP/IP / XMPP 
+- [x]Scrum / Continuous Integration
+	
+##Certifications
+
+- [x] Machine Learning: 		2014
+
+##Hornors and Awards
+- Cisco Collabration Awards(2011): Fast to build one automation platform for new product testing  
+- CTEN (Cisco Test Conference Network) Golden Prize (2012): Best paper rewards for automatic testing system. The paper contains the introduction for our designed automatic testing systems.
+- Best Partner Awarded by CDO Learning & Development of China (2014): Cooperated with Cisco Learning & Development department we offered a series Python courses to Cisco employees. As a Python language coacher, my class got a lot of warming feedbacks from employees and won the prize.
+
+
