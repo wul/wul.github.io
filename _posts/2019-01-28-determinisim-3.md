@@ -2,7 +2,7 @@
 layout: post
 title: 决定论与自由意志
 subtitle: 决定论
-author: 李武
+author: 秋月寒
 head-img: 
 catalog: true
 tags:
