@@ -2,7 +2,7 @@
 layout: post
 title: 书评 - 《活出生命的意义》
 subtitle: 
-author: 秋月寒
+author: 子木
 head-img: 
 catalog: false
 tags:

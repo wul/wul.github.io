@@ -2,7 +2,7 @@
 layout: post
 title: Python 装饰器实现的单例模式
 subtitle: 
-author: 秋月寒
+author: 子木
 head-img: 
 catalog: false
 tags:

@@ -2,7 +2,7 @@
 layout: post
 title: 存在与虚无
 subtitle: 
-author: 秋月寒
+author: 子木
 head-img: 
 catalog: true
 tags:
